@@ -77,3 +77,16 @@ run the command : alembic revision -m "<add some comments>"
 command : alembic heads - to get latest file
 command : alembic revision autogenerate -m "<comments>"  - This will auto generate DDL for tables
           based on the models we have defined. Once generated, run the alembic upgrade head to execute it
+
+HEROKU : A salesforce based dev ops app where env can be set, code can be built and deployed.
+create heroku account and install heroku CLI in local machine
+1. heroku --version
+2. login :  heroku login
+3. create an app command : heroku create <name> . This will create a new app
+This will create an app and will also have a git repo created for heroku.
+4. run : git remote . This will give 2 remotes. One for git another for heroku git
+if remote is not set, run this: git add "main" git@github.com:srikanth-ven-geet/fast-api.git
+5. cmd to push our code from git : git push heroku main 
+enter your user name (email) and the API key as password (heroku auth:token).
+6. Create a file with name : Procfile in the main directory of the project.
+This file will have app restart command
