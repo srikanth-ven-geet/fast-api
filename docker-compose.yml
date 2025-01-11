@@ -1,0 +1,21 @@
+version: '3'
+services:
+  api:
+    build: .
+    depends_on:
+      #start the DB first then the actual app service
+      - postgres
+    ports:
+      - 8000:8000
+    #env_file:
+    #   - ./.env_file
+  postgres:
+    image: postgres
+    environment:
+      - POSTGRES_PASSWORDS=PASSWORD123
+    #volume is required to save the data and not purge it when docker is stopped and restarted
+    volumes:
+      postgres-db:/var/lib/postgresql/data
+#add the postgres volume here so that multiple container can access it
+volumes:
+  postgres-db:

@@ -34,6 +34,11 @@ def get_db():
         yield db
     finally:
         db.close()
+
+
+@app.get("/")
+async def root():
+    return {"message":"hello world SQL Alchemy tutorial"}
     
 app.include_router(posts.rourter)
 app.include_router(users.rourter)
