@@ -1,0 +1,53 @@
+name: build and deply code
+#when will the pipeline start? On git push or pull on certain branches
+on:
+  push:
+    branches:
+      -"main"
+      -"development"
+jobs:
+  job1:   
+    environment:
+      name: test 
+    #refer to github marketplace for simplifying the commands
+    runs-on: ubuntu-latest
+    #use github environments to set up various environments
+    #use github secrets to store env variables and values. USe the key as shown below
+    env:
+      DATABASE_HOSTNAME: ${{secrets.DATABASE_HOST}}
+      DATABASE_PORT: ${{secrets.DATABASE_PORT}}
+      DATABASE_PASSWORD: ${{secrets.DATABASE_PASSWORD}}
+    steps:
+      - name: pulling code from git repo
+        uses: actions/checkout@v2
+      - name: install and set up python
+        uses: actions/setup-python@v2
+        with:
+          python-version: "3.9"
+      - name: update pip
+        run: python -m pip install --upgrade pip
+      - name: now install all python dependencies libraries
+        run: pip install -r requirements.txt
+      - name: test with pytest
+        run: |  #pipe here means we can combine multiple commands one after other
+          pip install pytest
+          pytest -v -s
+      # visit docs.docker.com/ci-cd/github-actions - this site has instructions to set up
+      # docker image for fastapi base image. Add docker image section below
+      # using build cache will help in reducing time to download images everytime
+      # once the image is built, it will be added to the git hub repo
+      # this will complete the CI process.
+  job2:
+    runs-on: ubuntu-latest
+    needs: [job1] #only after job1 is complete job2 has to start
+    steps:
+      -name: using appleboy github marketplace to login to ubuntu thru ssh
+       uses: appleboy/ssh-action@master
+       with: 
+        host: ${{secrets.UBUNTU_HOST}} 
+        username: ${{secrets.UBUNTU_USERNAME}}
+        password: ${{secrets.UBUNTU_PASSWORD}}
+        script: |
+          cd app/src
+          git pull
+          echo ${{secrets.UBUNTU_PASSWORD}} | sudo -S systemctl restart api
